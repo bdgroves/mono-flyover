@@ -413,16 +413,17 @@ KEYS = [
     # 1. Hovering west of Tioga Pass, looking east across Tioga Lake to the head of Lee Vining Canyon.
     ((37.9020, -119.2760, 3520), (37.9360, -119.2050, 2900), 140, 50, "Tioga Pass"),
     ((37.9170, -119.2540, 3380), (37.9420, -119.1800, 2650), 400, 50, "over Tioga Lake"),
-    # 2. Over Ellery Lake and down Lee Vining Canyon, Mono Lake showing at the far end.
-    ((37.9340, -119.2330, 3210), (37.9480, -119.1500, 2300), 500, 50, "Ellery Lake"),
-    ((37.9410, -119.1950, 2960), (37.9560, -119.1200, 2150), 560, 50, "Lee Vining Canyon"),
-    ((37.9480, -119.1500, 2620), (37.9950, -119.0400, 1950), 620, 50, "canyon mouth"),
-    # 3. Out over the lake: Negit Island to the left, then past the north side of Paoha Island.
-    ((37.9760, -119.0950, 2360), (38.0100, -119.0250, 1960), 640, 50, "the lake opens"),
-    ((38.0080, -119.0680, 2210), (38.0020, -119.0150, 2000), 560, 46, "Negit Island"),
-    ((38.0200, -119.0250, 2160), (37.9600, -119.0250, 1950), 500, 48, "Paoha Island"),
+    # 2. Over Ellery Lake and down into Lee Vining Canyon, below its rims, Mono Lake at the far end.
+    ((37.9370, -119.2330, 3150), (37.9430, -119.1950, 2500), 500, 50, "Ellery Lake"),
+    ((37.9430, -119.2050, 2820), (37.9340, -119.1600, 2350), 520, 50, "Lee Vining Canyon"),
+    ((37.9350, -119.1700, 2620), (37.9600, -119.1100, 2050), 560, 50, "lower canyon"),
+    ((37.9450, -119.1350, 2400), (38.0000, -119.0600, 1950), 600, 50, "canyon mouth"),
+    # 3. Out over the lake: Negit Island to the left, then along the north side of Paoha Island.
+    ((37.9750, -119.0950, 2300), (38.0215, -119.0495, 2000), 620, 50, "the lake opens"),
+    ((38.0100, -119.0750, 2200), (37.9984, -119.0363, 2000), 560, 46, "Negit Island"),
+    ((38.0230, -119.0300, 2150), (37.9600, -119.0300, 1950), 500, 48, "Paoha Island"),
     # 4. A long turn south, down low to the South Tufa towers.
-    ((37.9850, -118.9900, 2110), (37.9450, -119.0300, 1946), 420, 48, "turning south"),
+    ((37.9900, -118.9950, 2100), (37.9445, -119.0310, 1946), 420, 48, "turning south"),
     ((37.9550, -119.0150, 2020), (37.9420, -119.0330, 1946), 280, 40, "South Tufa"),
     ((37.9430, -119.0400, 2040), (37.9296, -119.0446, 2140), 320, 44, "to Panum Crater"),
     # 5. Over Panum Crater and south along the east side of the Mono Craters.
@@ -439,7 +440,7 @@ LABELS = [  # place, when it shows (between these two keyframe notes)
     ("tioga-lake", "Tioga Pass", "over Tioga Lake"),
     ("ellery-lake", "over Tioga Lake", "Lee Vining Canyon"),
     ("tioga-peak", "over Tioga Lake", "Lee Vining Canyon"),
-    ("mono-lake", "Lee Vining Canyon", "the lake opens"),
+    ("mono-lake", "lower canyon", "the lake opens"),
     ("lee-vining", "canyon mouth", "the lake opens"),
     ("negit-island", "the lake opens", "Paoha Island"),
     ("paoha-island", "Negit Island", "turning south"),

@@ -1,20 +1,110 @@
 {
-  "_about": "Places named in the flyover. Coordinates WGS84; heights are the ground or water surface in metres (sources in README). label_h is how far above the ground the label pin sits.",
-  "places": [
-    {"id": "tioga-pass", "name": "Tioga Pass", "sub": "3,031 m, Yosemite's east gate", "lat": 37.9111, "lon": -119.2581},
-    {"id": "mount-dana", "name": "Mount Dana", "sub": "3,981 m", "lat": 37.8999, "lon": -119.2211},
-    {"id": "mount-gibbs", "name": "Mount Gibbs", "sub": "3,895 m", "lat": 37.8771, "lon": -119.2118},
-    {"id": "mount-conness", "name": "Mount Conness", "sub": "3,840 m", "lat": 37.9670, "lon": -119.3213},
-    {"id": "tioga-peak", "name": "Tioga Peak", "sub": "3,513 m", "lat": 37.9494, "lon": -119.2464},
-    {"id": "tioga-lake", "name": "Tioga Lake", "sub": null, "lat": 37.9241, "lon": -119.2519},
-    {"id": "ellery-lake", "name": "Ellery Lake", "sub": null, "lat": 37.9364, "lon": -119.2379},
-    {"id": "dana-plateau", "name": "Dana Plateau", "sub": null, "lat": 37.9214, "lon": -119.2175},
-    {"id": "lee-vining", "name": "Lee Vining", "sub": null, "lat": 37.9550, "lon": -119.1283},
-    {"id": "mono-lake", "name": "Mono Lake", "sub": "about 1,946 m", "lat": 38.0166, "lon": -119.0093},
-    {"id": "negit-island", "name": "Negit Island", "sub": null, "lat": 38.017, "lon": -119.050},
-    {"id": "paoha-island", "name": "Paoha Island", "sub": null, "lat": 38.0002, "lon": -119.0157},
-    {"id": "south-tufa", "name": "South Tufa", "sub": "limestone towers", "lat": 37.9440, "lon": -119.0300},
-    {"id": "panum-crater", "name": "Panum Crater", "sub": "obsidian dome", "lat": 37.9296, "lon": -119.0446},
-    {"id": "crater-mountain", "name": "Mono Craters", "sub": "high point 2,796 m", "lat": 37.8778, "lon": -119.0069}
-  ]
+ "_about": "Places named in the flyover. Coordinates WGS84; heights are the ground or water surface in metres (sources in README). label_h is how far above the ground the label pin sits. Island centres are measured from the lidar DEM (the island outlines at the lake's surface), not from gazetteers, which disagree by up to a few km.",
+ "places": [
+  {
+   "id": "tioga-pass",
+   "name": "Tioga Pass",
+   "sub": "3,031 m, Yosemite's east gate",
+   "lat": 37.9111,
+   "lon": -119.2581
+  },
+  {
+   "id": "mount-dana",
+   "name": "Mount Dana",
+   "sub": "3,981 m",
+   "lat": 37.8999,
+   "lon": -119.2211
+  },
+  {
+   "id": "mount-gibbs",
+   "name": "Mount Gibbs",
+   "sub": "3,895 m",
+   "lat": 37.8771,
+   "lon": -119.2118
+  },
+  {
+   "id": "mount-conness",
+   "name": "Mount Conness",
+   "sub": "3,840 m",
+   "lat": 37.967,
+   "lon": -119.3213
+  },
+  {
+   "id": "tioga-peak",
+   "name": "Tioga Peak",
+   "sub": "3,513 m",
+   "lat": 37.9494,
+   "lon": -119.2464
+  },
+  {
+   "id": "tioga-lake",
+   "name": "Tioga Lake",
+   "sub": null,
+   "lat": 37.9241,
+   "lon": -119.2519
+  },
+  {
+   "id": "ellery-lake",
+   "name": "Ellery Lake",
+   "sub": null,
+   "lat": 37.9364,
+   "lon": -119.2379
+  },
+  {
+   "id": "dana-plateau",
+   "name": "Dana Plateau",
+   "sub": null,
+   "lat": 37.9214,
+   "lon": -119.2175
+  },
+  {
+   "id": "lee-vining",
+   "name": "Lee Vining",
+   "sub": null,
+   "lat": 37.955,
+   "lon": -119.1283
+  },
+  {
+   "id": "mono-lake",
+   "name": "Mono Lake",
+   "sub": "about 1,946 m",
+   "lat": 38.0166,
+   "lon": -119.0093
+  },
+  {
+   "id": "negit-island",
+   "name": "Negit Island",
+   "sub": null,
+   "lat": 38.0215,
+   "lon": -119.0495
+  },
+  {
+   "id": "paoha-island",
+   "name": "Paoha Island",
+   "sub": null,
+   "lat": 37.9984,
+   "lon": -119.0363
+  },
+  {
+   "id": "south-tufa",
+   "name": "South Tufa",
+   "sub": "limestone towers",
+   "lat": 37.9445,
+   "lon": -119.031
+  },
+  {
+   "id": "panum-crater",
+   "name": "Panum Crater",
+   "sub": "obsidian dome",
+   "lat": 37.9296,
+   "lon": -119.0446
+  },
+  {
+   "id": "crater-mountain",
+   "name": "Mono Craters",
+   "sub": "high point 2,796 m",
+   "lat": 37.8778,
+   "lon": -119.0069
+  }
+ ]
 }
