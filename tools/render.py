@@ -411,25 +411,25 @@ LOOK_RADIUS = 150.0
 # Each stretch takes its length / the average of its two speeds.
 KEYS = [
     # 1. Hovering west of Tioga Pass, looking east across Tioga Lake to the head of Lee Vining Canyon.
-    ((37.9020, -119.2760, 3520), (37.9360, -119.2050, 2900), 90, 50, "Tioga Pass"),
-    ((37.9170, -119.2540, 3380), (37.9420, -119.1800, 2650), 300, 50, "over Tioga Lake"),
+    ((37.9020, -119.2760, 3520), (37.9360, -119.2050, 2900), 140, 50, "Tioga Pass"),
+    ((37.9170, -119.2540, 3380), (37.9420, -119.1800, 2650), 400, 50, "over Tioga Lake"),
     # 2. Over Ellery Lake and down Lee Vining Canyon, Mono Lake showing at the far end.
-    ((37.9340, -119.2330, 3210), (37.9480, -119.1500, 2300), 380, 50, "Ellery Lake"),
-    ((37.9410, -119.1950, 2960), (37.9560, -119.1200, 2150), 420, 50, "Lee Vining Canyon"),
-    ((37.9480, -119.1500, 2620), (37.9950, -119.0400, 1950), 460, 50, "canyon mouth"),
+    ((37.9340, -119.2330, 3210), (37.9480, -119.1500, 2300), 500, 50, "Ellery Lake"),
+    ((37.9410, -119.1950, 2960), (37.9560, -119.1200, 2150), 560, 50, "Lee Vining Canyon"),
+    ((37.9480, -119.1500, 2620), (37.9950, -119.0400, 1950), 620, 50, "canyon mouth"),
     # 3. Out over the lake: Negit Island to the left, then past the north side of Paoha Island.
-    ((37.9760, -119.0950, 2360), (38.0100, -119.0250, 1960), 480, 50, "the lake opens"),
-    ((38.0080, -119.0680, 2210), (38.0020, -119.0150, 2000), 420, 46, "Negit Island"),
-    ((38.0200, -119.0250, 2160), (37.9600, -119.0250, 1950), 380, 48, "Paoha Island"),
+    ((37.9760, -119.0950, 2360), (38.0100, -119.0250, 1960), 640, 50, "the lake opens"),
+    ((38.0080, -119.0680, 2210), (38.0020, -119.0150, 2000), 560, 46, "Negit Island"),
+    ((38.0200, -119.0250, 2160), (37.9600, -119.0250, 1950), 500, 48, "Paoha Island"),
     # 4. A long turn south, down low to the South Tufa towers.
-    ((37.9850, -118.9900, 2110), (37.9450, -119.0300, 1946), 330, 48, "turning south"),
-    ((37.9550, -119.0150, 2020), (37.9420, -119.0330, 1946), 200, 40, "South Tufa"),
-    ((37.9430, -119.0400, 2040), (37.9296, -119.0446, 2140), 220, 44, "to Panum Crater"),
+    ((37.9850, -118.9900, 2110), (37.9450, -119.0300, 1946), 420, 48, "turning south"),
+    ((37.9550, -119.0150, 2020), (37.9420, -119.0330, 1946), 280, 40, "South Tufa"),
+    ((37.9430, -119.0400, 2040), (37.9296, -119.0446, 2140), 320, 44, "to Panum Crater"),
     # 5. Over Panum Crater and south along the east side of the Mono Craters.
-    ((37.9250, -119.0250, 2350), (37.8780, -119.0070, 2700), 330, 48, "Panum Crater"),
-    ((37.9000, -118.9750, 2800), (37.8600, -119.0100, 2600), 350, 48, "Mono Craters"),
+    ((37.9250, -119.0250, 2350), (37.8780, -119.0070, 2700), 420, 48, "Panum Crater"),
+    ((37.9000, -118.9750, 2800), (37.8600, -119.0100, 2600), 450, 48, "Mono Craters"),
     # 6. Turning west, and settling on the craters with the whole Sierra escarpment behind them.
-    ((37.8680, -118.9600, 3000), (37.9000, -119.2000, 3300), 150, 40, "turning west"),
+    ((37.8680, -118.9600, 3000), (37.9000, -119.2000, 3300), 200, 40, "turning west"),
     ((37.8580, -118.9550, 3050), (37.9050, -119.2150, 3400), 0, 36, "the escarpment"),
 ]
 
@@ -659,7 +659,7 @@ def main():
     ap.add_argument("--chunks", type=int, default=1)
     ap.add_argument("--all", action="store_true", help="flyover: every chunk in turn on this machine")
     ap.add_argument("--width", type=int, default=1920)
-    ap.add_argument("--seconds", default="0,14,24,33,45,56,64,72,82,95")
+    ap.add_argument("--seconds", default="0,12,19,26,34,42,50,60,72,80,90,100,112,128")
     ap.add_argument("--source", choices=["usgs", "prep"], default="usgs")
     a = ap.parse_args()
     out, work = Path(a.out), Path(a.work)

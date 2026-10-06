@@ -20,7 +20,7 @@ on:
         default: "1920"
       seconds:
         description: "stills: seconds into the flight (comma list)"
-        default: "0,14,24,33,45,56,64,72,82,95"
+        default: "0,12,19,26,34,42,50,60,72,80,90,100,112,128"
       only:
         description: "flyover: render just these chunks (comma list); the rest come from reuse_run"
         default: ""
