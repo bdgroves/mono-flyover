@@ -2,7 +2,11 @@
 
 A forge3d flight on a late-September morning: from Tioga Pass down Lee Vining Canyon, out over Mono Lake past Negit and Paoha islands, low over the South Tufa towers, over Panum Crater and south along the Mono Craters, settling on the craters with the Sierra Nevada's eastern escarpment behind them.
 
-Work in progress.
+**Watch it:** [the blog post](https://brooksgroves.com/blog/mono-flyover-post.html) · [`renders/mono-flyover.mp4`](renders/mono-flyover.mp4) (720p) · [`renders/mono-flyover-1080.mp4`](renders/mono-flyover-1080.mp4)
+
+![The last frame: the Mono Craters and the Sierra escarpment](renders/mono-flyover-poster.jpg)
+
+2 minutes 15 seconds, 4,047 frames, rendered on GitHub Actions in 60 parallel jobs on CPUs only (about 80 seconds a frame).
 
 ## How it's made
 
