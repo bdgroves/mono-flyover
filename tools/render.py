@@ -684,7 +684,7 @@ def encode(frames: Path, out: Path):
     out.parent.mkdir(parents=True, exist_ok=True)
     common = ["-framerate", str(FPS), "-i", str(frames / "frame_%05d.jpg"), "-pix_fmt", "yuv420p",
               "-movflags", "+faststart", "-c:v", "libx264", "-preset", "slow"]
-    subprocess.run([ff, "-y", "-loglevel", "error", *common, "-crf", "21", str(out.with_name(out.stem + "-1080.mp4"))], check=True)
+    subprocess.run([ff, "-y", "-loglevel", "error", *common, "-crf", "25", str(out.with_name(out.stem + "-1080.mp4"))], check=True)
     subprocess.run([ff, "-y", "-loglevel", "error", *common, "-crf", "25", "-vf", "scale=1280:-2", str(out)], check=True)
     frames_l = sorted(frames.glob("frame_*.jpg"))
     poster = frames_l[int(len(frames_l) * 0.93)]
