@@ -1,0 +1,8 @@
+sun 2026-09-26 08:45 PDT: azimuth 110, elevation 22
+wrote work/mid-panum-close_317099_4196616_321698_4200867_2.25_dem.tif 2044x1889 at 2.25 m, 1960-2448 m
+  NAIP 2022: 4 quarter-quads, 100.0% filled
+  mid-panum-close layer: 4599 x 4250 m at 2.25 m (texture 0.60 m)
+wrote work/near-panum-close_319751_4199199_321593_4200761_1_dem.tif 1842x1562 at 1 m, 1973-2147 m
+  NAIP 2022: 2 quarter-quads, 100.0% filled
+  near-panum-close layer: 1842 x 1562 m at 1 m (texture 0.60 m)
+still panum-close: 408s
