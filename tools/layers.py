@@ -3,7 +3,7 @@ Nested terrain layers, so the renders can use the full 1 m lidar.
 
 forge3d's viewer meshes at most 2048 vertices across a terrain and point-samples
 anything bigger down to fit (tools/README note; measured with synthetic DEMs).
-Over the whole 22 km render extent that is ~11 m a vertex, whatever the source
+Over the whole 36 km render extent that is ~18 m a vertex, whatever the source
 resolution. So each frame is drawn in layers, each one under the cap:
 
   far   the whole extent, averaged down to ~11 m       (the horizon)
