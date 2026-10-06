@@ -1,0 +1,25 @@
+[workspace]
+name = "mono-flyover"
+description = "A forge3d flight from Tioga Pass down Lee Vining Canyon, over Mono Lake and along the Mono Craters, on 1 m lidar"
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64", "osx-arm64"]
+
+[dependencies]
+python = "3.12.*"
+numpy = "*"
+scipy = "*"
+rasterio = "*"
+pillow = "*"
+ffmpeg = "*"
+pystac-client = "*"
+planetary-computer = "*"
+
+[pypi-dependencies]
+forge3d = "==1.40.1"
+
+[tasks]
+data = "python tools/prep_data.py"
+path = "python tools/render.py path"
+stills = "python tools/render.py stills --out renders/stills"
+render = "python tools/render.py flyover --chunks 60 --all"
+encode = "python tools/render.py encode"

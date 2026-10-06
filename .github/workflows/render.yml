@@ -1,0 +1,141 @@
+name: Render with forge3d
+
+# Renders the Mono Basin flyover with forge3d on GitHub's CPUs (Mesa's
+# llvmpipe Vulkan driver under a virtual display).
+#   mode = path     the flight map and timing only (renders/flight_map.png)
+#   mode = stills   a few frames along the flight (renders/stills/)
+#   mode = flyover  every frame, split across parallel jobs, stitched with
+#                   ffmpeg and committed to renders/
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "path, stills or flyover"
+        default: "stills"
+      chunks:
+        description: "Parallel render jobs for the flyover"
+        default: "60"
+      width:
+        description: "Frame width (16:9)"
+        default: "1920"
+      seconds:
+        description: "stills: seconds into the flight (comma list)"
+        default: "0,14,24,33,45,56,64,72,82,95"
+      only:
+        description: "flyover: render just these chunks (comma list); the rest come from reuse_run"
+        default: ""
+      reuse_run:
+        description: "flyover: run ID whose frames-* artifacts fill the chunks not rendered here"
+        default: ""
+
+permissions:
+  contents: write
+
+env:
+  FORGE3D: "forge3d==1.40.1"
+  APT: mesa-vulkan-drivers libvulkan1 xvfb libx11-xcb1 libxkbcommon-x11-0 libxkbcommon0 libxcursor1 libxi6 libxrandr2 libxcb-xkb1 libxcb-randr0 libxcb-shape0 libxcb-xfixes0 libwayland-client0 libegl1 fonts-dejavu-core
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      chunks: ${{ steps.c.outputs.list }}
+    steps:
+      - id: c
+        run: |
+          echo "list=$(python3 -c "
+          import json; mode='${{ inputs.mode }}'; only='${{ inputs.only }}'.strip()
+          n = int('${{ inputs.chunks }}') if mode == 'flyover' else 1
+          print(json.dumps([int(c) for c in only.split(',')] if (only and mode == 'flyover') else list(range(n))))")" >> "$GITHUB_OUTPUT"
+
+  render:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        chunk: ${{ fromJSON(needs.plan.outputs.chunks) }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Render data (prep-data branch)
+        run: git fetch -q --depth 1 origin prep-data && mkdir -p prep && git archive FETCH_HEAD | tar -x -C prep
+      - name: Software Vulkan + virtual display
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq $APT >/dev/null
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q "$FORGE3D" rasterio numpy pillow scipy pystac-client planetary-computer
+      - name: Render
+        env:
+          XDG_RUNTIME_DIR: /tmp
+        run: |
+          set -o pipefail
+          mkdir -p renders frames
+          if [ "${{ inputs.mode }}" = "path" ]; then
+            python tools/render.py path --prep prep --out renders 2>&1 | tee -a render.log; exit 0
+          fi
+          for attempt in 1 2 3; do
+            if [ "${{ inputs.mode }}" = "stills" ]; then
+              xvfb-run -a -s "-screen 0 1920x1080x24" python tools/render.py stills --prep prep --out renders/stills \
+                --seconds "${{ inputs.seconds }}" --width ${{ inputs.width }} 2>&1 | tee -a render.log && exit 0
+            else
+              xvfb-run -a -s "-screen 0 1920x1080x24" python tools/render.py flyover --prep prep --frames frames \
+                --chunk ${{ matrix.chunk }} --chunks ${{ inputs.chunks }} --width ${{ inputs.width }} 2>&1 | tee -a render.log && exit 0
+            fi
+            echo "attempt $attempt failed; retrying in $((attempt * 60)) s"; sleep $((attempt * 60))
+          done
+          exit 1
+      - name: Keep the log
+        if: always() && matrix.chunk == 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/l && cp render.log /tmp/l/ 2>/dev/null; cp -r renders /tmp/l/ 2>/dev/null; cd /tmp/l && git init -q -b render-logs
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -q -m "log ${{ inputs.mode }}" && git push -f -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" render-logs
+      - uses: actions/upload-artifact@v4
+        if: inputs.mode == 'flyover'
+        with:
+          name: frames-${{ matrix.chunk }}
+          path: frames/frame_*.jpg
+          retention-days: 5
+
+  publish:
+    needs: render
+    if: inputs.mode == 'flyover'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - if: inputs.reuse_run != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: frames-*
+          path: frames
+          merge-multiple: true
+          run-id: ${{ inputs.reuse_run }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: frames-*
+          path: frames
+          merge-multiple: true
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q pillow numpy rasterio scipy
+      - run: ls frames | wc -l && python tools/render.py encode --frames frames --out renders
+      - name: Commit the flyover
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add renders/mono-flyover.mp4 renders/mono-flyover-poster.jpg
+          git commit -q -m "renders: Mono Basin flyover [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q && exit 0; sleep 5; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flyover-1080p
+          path: renders/mono-flyover-1080.mp4
+          retention-days: 30

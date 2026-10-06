@@ -1,0 +1,7 @@
+prep/
+work/
+frames/
+renders/stills/
+renders/*-1080.mp4
+.pixi/
+__pycache__/
