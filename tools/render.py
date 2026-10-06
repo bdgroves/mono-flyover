@@ -659,24 +659,46 @@ def flyover(sc: Scene, out: Path, chunk: int, chunks: int, size=(1920, 1080)):
         v.close()
 
 
-def stills(sc: Scene, out: Path, seconds, size=(1920, 1080)):
+# Extra close-ups for the blog (not on the flight path):
+# name: (eye (lat, lon, alt m), aim (lat, lon, alt m), lens, caption)
+SHOTS = {
+    "panum-close": ((37.9350, -119.0345, 2330), (37.9293, -119.0452, 2120), 38,
+                    "Panum Crater · the pumice ring and obsidian dome"),
+    "mono-craters": ((37.9250, -118.9980, 3050), (37.8700, -119.0120, 2650), 44,
+                     "The Mono Craters, looking south down the chain"),
+}
+
+
+def stills(sc: Scene, out: Path, items, size=(1920, 1080)):
+    """items: seconds into the flight ("88") or names from SHOTS ("panum-close")."""
     f = plan(sc)
     sun = sun_at(WHEN)
     print(f"sun {WHEN:%Y-%m-%d %H:%M %Z}: azimuth {sun[0]:.0f}, elevation {sun[1]:.0f}", flush=True)
-    for s in seconds:
-        i = min(int(round(s * FPS)), len(f.t) - 1)
-        eye, aim = sc.world(*f.eye[i]), sc.world(*f.aim[i])
+    utm = lambda la, lo, h: sc.world(*sc.utm(lo, la), h)
+    for item in items:
         t = time.time()
-        v = stack_for(sc, [(eye, aim)], float(f.fov[i]), size, sun, tag=f"-s{i:05d}")
+        if item in SHOTS:
+            (e, a, fov, cap) = SHOTS[item]
+            eye, aim, name, i = utm(*e), utm(*a), item, None
+        else:
+            s = float(item)
+            i = min(int(round(s * FPS)), len(f.t) - 1)
+            eye, aim, fov, name = sc.world(*f.eye[i]), sc.world(*f.aim[i]), float(f.fov[i]), f"{s:05.1f}s"
+        v = stack_for(sc, [(eye, aim)], fov, size, sun, tag=f"-{name}")
         try:
             v.sun(*sun)
-            raw = out / f"raw_{i:05d}.png"
-            v.shot(eye, aim, float(f.fov[i]), raw)
+            raw = out / f"raw_{name}.png"
+            v.shot(eye, aim, fov, raw)
         finally:
             v.close()
-        draw_frame(sc, f, i, raw, size).save(out / f"still_{s:05.1f}s.jpg", quality=90)
+        if i is None:
+            im = finish(raw, MORNING)
+            caption(im, cap, "26 September, 8:45 am · USGS 3DEP 1 m lidar · NAIP aerial photography · forge3d")
+        else:
+            im = draw_frame(sc, f, i, raw, size)
+        im.save(out / f"still_{name}.jpg", quality=92)
         raw.unlink()
-        print(f"still {s} s: {time.time() - t:.0f}s", flush=True)
+        print(f"still {name}: {time.time() - t:.0f}s", flush=True)
 
 
 def encode(frames: Path, out: Path):
@@ -703,7 +725,9 @@ def main():
     ap.add_argument("--chunks", type=int, default=1)
     ap.add_argument("--all", action="store_true", help="flyover: every chunk in turn on this machine")
     ap.add_argument("--width", type=int, default=1920)
-    ap.add_argument("--seconds", default="0,12,19,26,34,42,50,60,72,80,90,100,112,128")
+    ap.add_argument("--seconds", default="0,12,19,26,34,42,50,60,72,80,90,100,112,128",
+                    help="stills: seconds into the flight and/or SHOTS names, comma-separated")
+    ap.add_argument("--pick", type=int, default=None, help="stills: render only item N of --seconds")
     ap.add_argument("--source", choices=["usgs", "prep"], default="usgs")
     a = ap.parse_args()
     out, work = Path(a.out), Path(a.work)
@@ -718,7 +742,8 @@ def main():
         report(f)
         path_map(sc, f, out / "flight_map.png")
     elif a.mode == "stills":
-        stills(sc, out, [float(s) for s in a.seconds.split(",")], size)
+        items = [x.strip() for x in a.seconds.split(",") if x.strip()]
+        stills(sc, out, [items[a.pick]] if a.pick is not None else items, size)
     elif a.mode == "flyover":
         for c in (range(a.chunks) if a.all else [a.chunk]):
             flyover(sc, Path(a.frames), c, a.chunks, size)
