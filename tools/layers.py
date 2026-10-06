@@ -162,7 +162,7 @@ def horizon_layer(scene, work: Path) -> Layer:
         mn = float(np.nanmin(s.read(1)))
     tex = work / "horizon_tex.png"
     if not tex.exists():
-        grade_texture(scene.horizon_tex_src, tex)
+        grade_texture(scene.horizon_tex_src, tex, scene.horizon_src)
     with rasterio.open(scene.horizon_tex_src) as s:
         nb = s.bounds
     W, H = bounds[2] - bounds[0], bounds[3] - bounds[1]
@@ -206,7 +206,7 @@ def window_layer(scene, name: str, bounds, work: Path, source: str) -> Layer:
                         crs=scene.crs, transform=t)
             with rasterio.open(tif, "w", **prof) as d:
                 d.write(a)
-        grade_texture(tif, tex)
+        grade_texture(tif, tex, dem)
     with rasterio.open(dem) as s:
         a = s.read(1)
         mn = float(np.nanmin(a))

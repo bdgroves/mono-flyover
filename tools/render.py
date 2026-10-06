@@ -100,7 +100,7 @@ class Scene:
         self.horizon_tex_src = prep / "horizon_s2_60m.tif"
         self.texture = work / "naip_8k_graded.png"
         if not self.texture.exists():
-            grade_texture(self.naip_src, self.texture)
+            grade_texture(self.naip_src, self.texture, self.dem_src)
         self.places = {p["id"]: p for p in json.loads((ROOT / "data/places.json").read_text())["places"]}
         from layers import far_layer, horizon_layer
         self.far = far_layer(self, work)
@@ -142,9 +142,45 @@ def sun_at(local: datetime):
     return float(s.azimuth), float(s.elevation)
 
 
-def grade_texture(src_tif: Path, out_png: Path):
-    """NAIP -> 8K texture, saturation x1.25 and a gentle S-curve (after the
-    forge3d Bryce example: offsets the renderer's desaturating sky tint)."""
+LAKE_H = (1944.6, 1946.8)                  # Mono Lake's surface in the lidar, metres
+LAKE_DEEP = np.array([0.10, 0.24, 0.33])    # what the lake looks like from the air, deep...
+LAKE_SHALLOW = np.array([0.30, 0.46, 0.47])  # ...and over the shallow shelf by the shore
+
+
+def lake_mask(dem_path, ref_tif, shape):
+    """Mono Lake on a texture's grid: flat ground at the lake's surface height,
+    joined to the biggest such area, softened at the shore. Also a 0-1
+    'shallowness' that fades over the first ~150 m from the shore."""
+    from rasterio.warp import reproject
+    with rasterio.open(ref_tif) as r:
+        b = r.bounds
+    h, w = shape
+    t = rasterio.transform.from_bounds(b.left, b.bottom, b.right, b.top, w, h)
+    z = np.full((h, w), np.nan, np.float32)
+    with rasterio.open(dem_path) as d:
+        reproject(rasterio.band(d, 1), z, dst_transform=t, dst_crs=CRS, resampling=rasterio.enums.Resampling.bilinear)
+    flat = (z > LAKE_H[0]) & (z < LAKE_H[1])
+    if not flat.any():
+        return None, None
+    lab, n = ndimage.label(flat)
+    sizes = ndimage.sum(flat, lab, range(1, n + 1))
+    px = (b.right - b.left) / w
+    keep = np.flatnonzero(sizes * px * px > 2e5) + 1          # lake pieces over 0.2 km2
+    if not keep.size:
+        return None, None
+    water = np.isin(lab, keep)
+    water = ndimage.binary_opening(water, iterations=2)
+    shore = ndimage.distance_transform_edt(water) * px
+    alpha = np.clip(shore / 12.0, 0, 1)
+    shallow = np.clip(1 - shore / 150.0, 0, 1) ** 1.5
+    return alpha.astype(np.float32), shallow.astype(np.float32)
+
+
+def grade_texture(src_tif: Path, out_png: Path, dem=None):
+    """Aerial photo -> 8K texture, saturation x1.25 and a gentle S-curve (after
+    the forge3d Bryce example: offsets the renderer's desaturating sky tint).
+    With a DEM, Mono Lake is recoloured: NAIP catches the lake green with
+    summer algae and glare; from the air on a clear morning it reads deep blue."""
     with rasterio.open(src_tif) as s:
         a = np.moveaxis(s.read(), 0, -1)
     im = Image.fromarray(a)
@@ -152,6 +188,7 @@ def grade_texture(src_tif: Path, out_png: Path):
     k = 8192 / max(w, h)
     im = im.resize((int(w * k), int(h * k)), Image.LANCZOS)
     a = np.asarray(im)
+    alpha, shallow = lake_mask(dem, src_tif, a.shape[:2]) if dem is not None else (None, None)
     out = np.empty_like(a)
     wl = np.array([0.2126, 0.7152, 0.0722], np.float32)
     for r0 in range(0, a.shape[0], 512):
@@ -159,10 +196,16 @@ def grade_texture(src_tif: Path, out_png: Path):
         lum = (rgb @ wl)[..., None]
         rgb = np.clip(lum + (rgb - lum) * 1.25, 0, 1)
         rgb += 0.10 * (rgb - 0.5) * (1 - np.abs(2 * rgb - 1))
+        if alpha is not None:
+            al = alpha[r0:r0 + 512, :, None]
+            sh = shallow[r0:r0 + 512, :, None]
+            # keep the photo's ripples and shading as a faint texture on the new colour
+            local = lum / (ndimage.uniform_filter(lum[..., 0], 41)[..., None] + 1e-3)
+            lake = (LAKE_DEEP * (1 - sh) + LAKE_SHALLOW * sh) * np.clip(local, 0.85, 1.15)
+            rgb = rgb * (1 - al) + lake * al
         out[r0:r0 + 512] = (np.clip(rgb * 0.92, 0, 1) * 255 + 0.5).astype(np.uint8)
     out_png.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray(out).save(out_png)
-
 
 
 MAX_THETA = 85.0   # the viewer won't look flatter than 5 deg below horizontal
@@ -397,7 +440,7 @@ def caption(im: Image.Image, title, sub=None, alpha=1.0, where="bottom"):
 
 
 
-MORNING = Sky((0.20, 0.36, 0.64), (0.90, 0.86, 0.80), (1.03, 1.0, 0.96), 0.42)
+MORNING = Sky((0.24, 0.42, 0.70), (0.88, 0.87, 0.84), (1.03, 1.0, 0.96), 0.24)
 
 
 # ── flight ────────────────────────────────────────────────────────────────────
