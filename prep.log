@@ -1,0 +1,10 @@
+  retry mono_dem_8m.tif tile 2000,0: HTTP 504 b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.or'
+  retry mono_dem_8m.tif tile 2000,0: HTTP 504 b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.or'
+  retry mono_dem_8m.tif tile 2000,2000: HTTP 504 b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.or'
+  retry mono_dem_8m.tif tile 2000,2000: HTTP 504 b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.or'
+wrote prep/mono_dem_8m.tif 4594x3988 at 8 m, 1945-3980 m
+wrote prep/horizon_dem_60m.tif 2986x2473 at 60 m, 111-4329 m
+NAIP years [2012, 2014, 2016, 2018, 2020, 2022]; using 2022: 48 quarter-quads
+  NAIP 100.00% filled
+wrote mono_naip_5m.tif 7350x6381
+  Sentinel-2: 11 scenes, 100.00% filled
